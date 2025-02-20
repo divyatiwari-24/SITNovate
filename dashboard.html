@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Dashboard</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <h1>Feedback Sentiment Dashboard</h1>
+    
+    <h2>Recent Feedbacks</h2>
+    <ul id="feedback-list"></ul>
+
+    <h2>Visualizations</h2>
+    <img id="wordcloud" src="/static/wordcloud.png" width="500px">
+    <img id="bar_chart" src="/static/bar_chart.png" width="500px">
+    <img id="pie_chart" src="/static/pie_chart.png" width="500px">
+    <h2>AI-Based Business Insights</h2>
+<div id="ai-insights" style="padding: 15px; border: 1px solid #ddd; background: #f9f9f9;">
+    <p>Loading insights...</p>
+</div>
+
+
+    <script>
+        function fetchFeedbacks() {
+            $.getJSON("/feedbacks", function(data) {
+                $("#feedback-list").empty();
+                data.forEach(feedback => {
+                    $("#feedback-list").append(`<li>${feedback.text} - <b>${feedback.sentiment}</b></li>`);
+                });
+            });
+        }
+
+        function refreshVisualizations() {
+            $("#wordcloud").attr("src", "/static/wordcloud.png?" + new Date().getTime());
+            $("#bar_chart").attr("src", "/static/bar_chart.png?" + new Date().getTime());
+            $("#pie_chart").attr("src", "/static/pie_chart.png?" + new Date().getTime());
+        }
+
+        function updateDashboard() {
+            fetchFeedbacks();
+            refreshVisualizations();
+        }
+
+        function fetchAIInsights() {
+    $.getJSON("/ai-insights", function(data) {
+        $("#ai-insights").html("<p>" + data.insights + "</p>");
+    });
+}
+
+// Update AI insights every 10 seconds
+setInterval(fetchAIInsights, 10000);
+fetchAIInsights();  // Initial Load
+
+    </script>
+
+</body>
+</html>
